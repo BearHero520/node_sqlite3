@@ -44,8 +44,8 @@ router.post('/upload', upload.single('file'), async (req, res, next) => {
 });  
 
 //读取文件 绝对路径
- router.use('/files', express.static(path.join(__dirname, '../uploads'))); 
+ router.use('/files', express.static(path.join(process.cwd(), 'uploads'))); 
  //相对路径
 //router.use('/files', express.static('uploads'))
-console.log(path.join(__dirname, '../uploads'),'2333');
+console.log(path.join(process.cwd(), 'uploads'),'2333');
 module.exports = router;

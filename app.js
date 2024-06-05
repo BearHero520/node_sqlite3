@@ -1,14 +1,3 @@
-/*
- * @Author: 龙
- * @Date: 2024-05-28 17:27:00
- * @LastEditors: 龙
- * @LastEditTime: 2024-05-30 09:15:39
- * @FilePath: \SqlLine\app.js
- * @Description: 
- * 
- * Copyright (c) 2024 by 弹司令, All Rights Reserved. 
- */
-
 var createError = require('http-errors');
 var express = require('express');
 var path = require('path');
@@ -61,6 +50,13 @@ app.use(function(err, req, res, next) {
   // render the error page
   res.status(err.status || 500);
   res.render('error');
+});
+
+process.on('uncaughtException', (err) => {  
+  console.error('全局捕获到未捕获的异常：', err);  
+  console.error('Node.js 不会因为这次异常而退出');  
+  // 这里可以添加一些清理逻辑，比如关闭文件描述符、数据库连接等  
+  // 但是不推荐在这里重启应用，因为这可能会掩盖更严重的问题  
 });
 
 module.exports = app;

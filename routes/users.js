@@ -1,17 +1,14 @@
-
 var express = require('express');
 var router = express.Router();
-var db = require('./db');
+var { connectToDatabase } = require('../DB/db');
 var errorFun = require('./err');
 const uuid = require('uuid/v4');
 
 
-
-
 // 查询所有用户的信息
-router.get('/user', function (req, res, next) {
-  console.log(db);
-  db.all('SELECT * FROM users', [], (err, rows) => {
+router.get('/user',async function (req, res, next) {
+  const db =await connectToDatabase()
+   db.all('SELECT * FROM users', [], (err, rows) => {
     if (err) {
       console.error(err.message);
       res.status(500).json(errorFun.err())
@@ -26,11 +23,12 @@ router.get('/user', function (req, res, next) {
 });
 
 // 查询指定用户信息（通过查询参数userid）  
-router.get('/user/byUserid', function (req, res, next) {
+router.get('/user/byUserid',async function (req, res, next) {
   const userid = req.query.userid; // 从查询参数中获取userid  
   if (!userid) {
     return res.status(400).json(errorFun.err(400, 'Userid is required')); // 如果未提供userid，则返回错误  
   }
+  const db =await connectToDatabase()
   // 查询指定用户的信息  
   db.get('SELECT * FROM users WHERE userid = ?', [userid], (err, row) => {
     if (err) {
@@ -50,9 +48,9 @@ router.get('/user/byUserid', function (req, res, next) {
   });
 });
 
-router.post('/user/delete', function (req, res, next) {
+router.post('/user/delete',async function (req, res, next) {
   const userid = req.body.userid;
-
+  const db =await connectToDatabase()
   // 根据ID删除用户
   db.run('DELETE FROM users WHERE userid = ?', [userid], (err) => {
     if (err) {
@@ -70,10 +68,10 @@ router.post('/user/delete', function (req, res, next) {
 
 
 
-router.post('/user/update', function (req, res, next) {
+router.post('/user/update',async function (req, res, next) {
   const { name, nickname, gender, email, phone, avatar, userid, account, password, address } = req.body;
 
-
+  const db =await connectToDatabase()
   db.all('SELECT * FROM users WHERE userid = ?', [userid], (err, row) => {
     if (err) {
       next(err)
@@ -112,7 +110,8 @@ router.post('/user/update', function (req, res, next) {
 });
 
 
-router.post('/user/add', function (req, res, next) {
+router.post('/user/add',async function (req, res, next) {
+  
   const { name, nickname, gender, email, phone, avatar, account, password, address } = req.body;
   const sql = `INSERT INTO users (name, nickname, gender, email, phone, avatar, userid, account, password, address) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
   if (!account || !password) {
@@ -123,6 +122,7 @@ router.post('/user/add', function (req, res, next) {
     })
     return
   }
+  const db =await connectToDatabase()
   //查询是否存在该账户
   db.get('SELECT * FROM users WHERE account = ?', [account], (err, row) => {
     if (err) next(err)
