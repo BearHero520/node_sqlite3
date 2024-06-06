@@ -137,8 +137,8 @@
           this.$message.success('上传成功')
         },
         beforeAvatarUpload(rawFile) {
-          if (rawFile.type !== 'image/jpeg') {
-            this.$message.error('Avatar picture must be JPG format!')
+          if (!rawFile.type.startsWith('image/')) {
+            this.$message.error('上传图片格式')
             return false
           } else if (rawFile.size / 1024 / 1024 > 2) {
             this.$message.error('Avatar picture size can not exceed 2MB!')
